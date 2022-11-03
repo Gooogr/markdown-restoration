@@ -43,15 +43,17 @@ def inference():
 
     with open(args.in_file, 'r', encoding='utf-8') as f:
         text = f.read()
-    text = re.sub(r"[,:\-–.!;?]", '', text)
+    # text = re.sub(r"[,:\-–.!;?]", '', text)
     words_original_case = text.split()
-    words = text.lower().split()
+    words = text.split()  # words = text.lower().split()
+   
 
     word_pos = 0
     sequence_len = args.sequence_length
     result = ""
     decode_idx = 0
-    punctuation_map = {0: '', 1: ',', 2: '.', 3: '?'}
+    # punctuation_map = {0: '', 1: ',', 2: '.', 3: '?'}
+    punctuation_map = {0:'', 1:'H1', 2:'H2', 3:'BLOCK', 4:'LIST'}
     if args.language != 'en':
         punctuation_map[2] = '।'
 
@@ -95,7 +97,7 @@ def inference():
             if y_mask[i] == 1:
                 result += words_original_case[decode_idx] + punctuation_map[y_predict[i].item()] + ' '
                 decode_idx += 1
-    print('Punctuated text')
+    print('Resulted text')
     print(result)
     with open(args.out_file, 'w', encoding='utf-8') as f:
         f.write(result)
