@@ -1,22 +1,19 @@
 # Markdown Restoration using Transformer Models
 
-Based on official implementation of the paper [*Punctuation Restoration using Transformer Models for High-and Low-Resource Languages*](https://aclanthology.org/2020.wnut-1.18/) accepted at the EMNLP workshop [W-NUT 2020](http://noisy-text.github.io/2020/).
-
+Based on official implementation of the paper [*Punctuation Restoration using Transformer Models for High-and Low-Resource Languages*](https://aclanthology.org/2020.wnut-1.18/).
 
 ## Data
 
-#### English
-English datasets are provided in `data/en` directory. These are collected from [here](https://drive.google.com/file/d/0B13Cc1a7ebTuMElFWGlYcUlVZ0k/view).
-
-#### Bangla
-Bangla datasets are provided in `data/bn` directory.
+Markdown datasets are provided in `data/markdown` directory. These are collected from [here](https://drive.google.com/file/d/0B13Cc1a7ebTuMElFWGlYcUlVZ0k/view).
 
 
 ## Model Architecture
-We fine-tune a Transformer architecture based language model (e.g., BERT) for the punctuation restoration task.
-Transformer encoder is followed by a bidirectional LSTM and linear layer that predicts target punctuation token at
-each sequence position.
-![](./assets/model_architectue.png)
+Fine-tuned Transformer architecture based language model (e.g., BERT), followed by a bidirectional LSTM and linear layer that predicts target markdown token at each sequence position.
+
+Supported markdown tags:
+* Headers: H1, H2
+* Separated text blocks
+* Unordered lists
 
 
 ## Dependencies
@@ -26,22 +23,15 @@ dependencies can be installed with the following command
 pip install -r requirements.txt
 ```
 
-
 ## Training
-To train punctuation restoration model with optimal parameter settings for English run the following command
+To train punctuation restoration model with optimal parameter settings:
 ```
 python src/train.py --cuda=True --pretrained-model=roberta-large --freeze-bert=False --lstm-dim=-1 
---language=english --seed=1 --lr=5e-6 --epoch=10 --use-crf=False --augment-type=all  --augment-rate=0.15 
---alpha-sub=0.4 --alpha-del=0.4 --data-path=data --save-path=out
-```
-To train for Bangla the corresponding command is
-```
-python src/train.py --cuda=True --pretrained-model=xlm-roberta-large --freeze-bert=False --lstm-dim=-1 
---language=bangla --seed=1 --lr=5e-6 --epoch=10 --use-crf=False --augment-type=all  --augment-rate=0.15 
+--language=markdown --seed=1 --lr=5e-6 --epoch=10 --use-crf=False --augment-type=all  --augment-rate=0.15 
 --alpha-sub=0.4 --alpha-del=0.4 --data-path=data --save-path=out
 ```
 
-#### Supported models for English
+#### Supported models for training
 ```
 bert-base-uncased
 bert-large-uncased
@@ -60,52 +50,29 @@ albert-base-v2
 albert-large-v2
 ```
 
-#### Supported models for Bangla
-```
-bert-base-multilingual-cased
-bert-base-multilingual-uncased
-xlm-mlm-100-1280
-distilbert-base-multilingual-cased
-xlm-roberta-base
-xlm-roberta-large
-```
 
-
-## Pretrained Models
-You can find pretrained mdoels for RoBERTa-large model with augmentation for English [here](https://drive.google.com/file/d/17BPcnHVhpQlsOTC8LEayIFFJ7WkL00cr/view?usp=sharing)  
-XLM-RoBERTa-large model with augmentation for Bangla can be found [here](https://drive.google.com/file/d/1X2udyT1XYrmCNvWtFpT_6jrWsQejGCBW/view?usp=sharing)
-
+## Pretrained Models (UPDATE THIS PART)
+You can find pretrained models with augmentation here:
+* [XLM-RoBERTa-large]()
+* [XLM-RoBERTa-base]()
 
 
 ## Inference
-You can run inference on unprocessed text file to produce punctuated text using `inference` module. Note that if the 
-text already contains punctuation they are removed before inference. 
+You can run inference on unprocessed text file to produce punctuated text using `inference` module. 
 
 Example script for English:
 ```bash
-python inference.py --pretrained-model=roberta-large --weight-path=roberta-large-en.pt --language=en 
---in-file=data/test_en.txt --out-file=data/test_en_out.txt
+python src/inference.py --pretrained-model=roberta-large --weight-path=out/roberta-large-markdown.pt --language=en 
+--in-file=data/test_markdown.txt --out-file=data/test_markdown_out.txt
 ```
-This should create the text file with following output:
+This should create the text file with following output (UPDATE THIS PART):
 ```text
 Tolkien drew on a wide array of influences including language, Christianity, mythology, including the Norse Völsunga saga, archaeology, especially at the Temple of Nodens, ancient and modern literature and personal experience. He was inspired primarily by his profession, philology. his work centred on the study of Old English literature, especially Beowulf, and he acknowledged its importance to his writings. 
 ```
 
-Similarly, For Bangla
-```bash
-python inference.py --pretrained-model=xlm-roberta-large --weight-path=xlm-roberta-large-bn.pt --language=bn  
---in-file=data/test_bn.txt --out-file=data/test_bn_out.txt
-```
-The expected output is
-```text
-বিংশ শতাব্দীর বাংলা মননে কাজী নজরুল ইসলামের মর্যাদা ও গুরুত্ব অপরিসীম। একাধারে কবি, সাহিত্যিক, সংগীতজ্ঞ, সাংবাদিক, সম্পাদক, রাজনীতিবিদ এবং সৈনিক হিসেবে অন্যায় ও অবিচারের বিরুদ্ধে নজরুল সর্বদাই ছিলেন সোচ্চার। তার কবিতা ও গানে এই মনোভাবই প্রতিফলিত হয়েছে। অগ্নিবীণা হাতে তার প্রবেশ, ধূমকেতুর মতো তার প্রকাশ। যেমন লেখাতে বিদ্রোহী, তেমনই জীবনে কাজেই "বিদ্রোহী কবি"। তার জন্ম ও মৃত্যুবার্ষিকী বিশেষ মর্যাদার সঙ্গে উভয় বাংলাতে প্রতি বৎসর উদযাপিত হয়ে থাকে। 
-```
-
-Please note that *Comma* includes commas, colons and dashes, *Period* includes full stops, exclamation marks 
-and semicolons and *Question* is just question marks. 
 
 
-## Test
+## Test (UPDATE THIS PART)
 Trained models can be tested on processed data using `test` module to prepare result.
 
 For example, to test the best preforming English model run following command
@@ -117,7 +84,7 @@ Please provide corresponding arguments for `pretrained-model`, `lstm-dim`, `use-
 model. This will run test for all data available in `data-path` directory.
 
 
-## Cite this work
+## Citation
 
 ```
 @inproceedings{alam-etal-2020-punctuation,
