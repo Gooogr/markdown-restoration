@@ -54,8 +54,8 @@ def inference():
     decode_idx = 0
     # punctuation_map = {0: '', 1: ',', 2: '.', 3: '?'}
     punctuation_map = {0:'', 1:'H1', 2:'H2', 3:'BLOCK', 4:'LIST'}
-    if args.language != 'en':
-        punctuation_map[2] = '।'
+    # if args.language != 'en':
+    #     punctuation_map[2] = '।'
 
     while word_pos < len(words):
         x = [TOKEN_IDX[token_style]['START_SEQ']]
